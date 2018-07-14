@@ -1,0 +1,16 @@
+let xyz: string
+let a, b, c, d: word
+
+a = 10 #A comment
+b = 20 
+c = 0
+
+#Another comment
+
+label @test
+
+c = a * b
+push(a)
+d = pop()
+
+x = "Hello World"
