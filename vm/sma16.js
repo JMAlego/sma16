@@ -170,8 +170,9 @@ const Instructions = [
     m.pc.inc(1);
   }, // Add/Operand
   (m) => {
-    // Free Space
-  }, // ???
+    m.accumulator.set(m.memory.getData(m.pc.get()) | m.accumulator.get());
+    m.pc.inc(1);
+  }, // OR/Operand
   (m) => {
     m.accumulator.set(m.stack.pop());
     m.pc.inc(1);
