@@ -7,12 +7,12 @@ __version__ = "0.1.0alpha"
 
 import argparse
 import sys
-import os.path
 
-from exsmas import base_instructions, extension_instructions
+#from exsmas import base_instructions, extension_instructions
 
 
 def debug(*args, **kwargs):
+    """Print debug messages."""
     if kwargs.get("debug", True):
         print(args)
 

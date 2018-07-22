@@ -7,7 +7,7 @@ from enum import Enum
 
 class BaseInstructionType(Enum):
     """Base Instruction Type Enum.
-    
+
     Values:
       DEFINED: Instruction definition represents a defined instruction
       UNDEFINED: Instruction definition does not represent a defined instruction
@@ -18,7 +18,7 @@ class BaseInstructionType(Enum):
 
 class BaseInstructionDataType(Enum):
     """Base Instruction Data Type Enum.
-    
+
     Values:
       IMMEDIATE: Data is used by instruction in an immediate way
       INDIRECT: Data is used by instruction in an indirect way
@@ -121,7 +121,8 @@ BASE_INSTRUCTION_JUMPZ = BaseInstructionDefinition(
     "JUMPZ", 0x3, BaseInstructionType.DEFINED,
     BaseInstructionDataType.IMMEDIATE),
 BASE_INSTRUCTION_LOAD = BaseInstructionDefinition(
-    "LOAD", 0x4, BaseInstructionType.DEFINED, BaseInstructionDataType.INDIRECT),
+    "LOAD", 0x4, BaseInstructionType.DEFINED,
+    BaseInstructionDataType.INDIRECT),
 BASE_INSTRUCTION_STORE = BaseInstructionDefinition(
     "STORE", 0x5, BaseInstructionType.DEFINED,
     BaseInstructionDataType.INDIRECT),
@@ -132,14 +133,17 @@ BASE_INSTRUCTION_RSHIFT = BaseInstructionDefinition(
     "RSHIFT", 0x7, BaseInstructionType.DEFINED,
     BaseInstructionDataType.IMMEDIATE),
 BASE_INSTRUCTION_XOR = BaseInstructionDefinition(
-    "XOR", 0x8, BaseInstructionType.DEFINED, BaseInstructionDataType.IMMEDIATE),
+    "XOR", 0x8, BaseInstructionType.DEFINED,
+    BaseInstructionDataType.IMMEDIATE),
 BASE_INSTRUCTION_AND = BaseInstructionDefinition(
-    "AND", 0x9, BaseInstructionType.DEFINED, BaseInstructionDataType.IMMEDIATE),
+    "AND", 0x9, BaseInstructionType.DEFINED,
+    BaseInstructionDataType.IMMEDIATE),
 BASE_INSTRUCTION_FREE = BaseInstructionDefinition(
     "FREE", 0xa, BaseInstructionType.UNDEFINED,
     BaseInstructionDataType.UNDEFINED),
 BASE_INSTRUCTION_ADD = BaseInstructionDefinition(
-    "ADD", 0xb, BaseInstructionType.DEFINED, BaseInstructionDataType.IMMEDIATE),
+    "ADD", 0xb, BaseInstructionType.DEFINED,
+    BaseInstructionDataType.IMMEDIATE),
 BASE_INSTRUCTION_OR = BaseInstructionDefinition(
     "OR", 0xc, BaseInstructionType.DEFINED, BaseInstructionDataType.IMMEDIATE),
 BASE_INSTRUCTION_POP = BaseInstructionDefinition(
@@ -156,13 +160,4 @@ BASE_INSTRUCTIONS = [
     BASE_INSTRUCTION_AND, BASE_INSTRUCTION_FREE, BASE_INSTRUCTION_ADD,
     BASE_INSTRUCTION_OR, BASE_INSTRUCTION_POP, BASE_INSTRUCTION_PUSH,
     BASE_INSTRUCTION_NOOP
-]
-
-__all__ = [
-    "BASE_INSTRUCTIONS", "BASE_INSTRUCTION_HALT", "BASE_INSTRUCTION_UNDEF",
-    "BASE_INSTRUCTION_JUMP", "BASE_INSTRUCTION_JUMPZ", "BASE_INSTRUCTION_LOAD",
-    "BASE_INSTRUCTION_STORE", "BASE_INSTRUCTION_LSHIFT",
-    "BASE_INSTRUCTION_RSHIFT", "BASE_INSTRUCTION_XOR", "BASE_INSTRUCTION_AND",
-    "BASE_INSTRUCTION_FREE", "BASE_INSTRUCTION_ADD", "BASE_INSTRUCTION_OR",
-    "BASE_INSTRUCTION_POP", "BASE_INSTRUCTION_PUSH", "BASE_INSTRUCTION_NOOP"
 ]

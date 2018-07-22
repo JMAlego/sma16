@@ -1,19 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""Provides definitions for extended SMA16 instructions."""
 
-from .base_instructions import *
-
-
-class VariablePlaceholder:
-
-    def __init__(self, *args, **kwargs):
-        """Initialise Placeholder for Variable."""
-
-
-class ConstantValue:
-
-    def __init__(self, *args, **kwargs):
-        """Initialise Constant Value."""
+from .base_instructions import BASE_INSTRUCTION_HALT, BASE_INSTRUCTION_UNDEF, \
+    BASE_INSTRUCTION_JUMP, BASE_INSTRUCTION_JUMPZ, BASE_INSTRUCTION_LOAD, \
+    BASE_INSTRUCTION_STORE, BASE_INSTRUCTION_LSHIFT, BASE_INSTRUCTION_RSHIFT, \
+    BASE_INSTRUCTION_XOR, BASE_INSTRUCTION_AND, BASE_INSTRUCTION_FREE, \
+    BASE_INSTRUCTION_ADD, BASE_INSTRUCTION_OR, BASE_INSTRUCTION_POP, \
+    BASE_INSTRUCTION_PUSH, BASE_INSTRUCTION_NOOP
+from .variables import VariablePlaceholder
+from .values import ConstantValue
 
 
 class ExtensionInstructionDefinition:
