@@ -25,6 +25,9 @@ class Variable:
         """Does the variable have an address assigned?"""
         return self.location is not None
 
+class TempVariable(Variable):
+    """Provides a temp location variable for assembly."""
+
 class VariablePlaceholder:
     """Provides a placeholder for a variable or value in a instruction definition."""
 
