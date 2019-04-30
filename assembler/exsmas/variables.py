@@ -19,14 +19,16 @@ class Variable:
         """Get the address of the variable."""
 
     def set_location(self) -> None:
-        """Sets the address of the variable."""
+        """Set the address of the variable."""
 
     def has_location(self) -> bool:
-        """Does the variable have an address assigned?"""
+        """Return true if the variable has an address assigned, false otherwise."""
         return self.location is not None
+
 
 class TempVariable(Variable):
     """Provides a temp location variable for assembly."""
+
 
 class VariablePlaceholder:
     """Provides a placeholder for a variable or value in a instruction definition."""

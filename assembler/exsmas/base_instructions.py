@@ -3,15 +3,28 @@
 """Provides classes and data associated with the base instructions of the SMA16."""
 
 from enum import Enum
+from typing import Optional
+
+__all__ = [
+    "BASE_INSTRUCTION_HALT", "BASE_INSTRUCTION_UNDEF", "BASE_INSTRUCTION_JUMP",
+    "BASE_INSTRUCTION_JUMPZ", "BASE_INSTRUCTION_LOAD",
+    "BASE_INSTRUCTION_STORE", "BASE_INSTRUCTION_LSHIFT",
+    "BASE_INSTRUCTION_RSHIFT", "BASE_INSTRUCTION_XOR", "BASE_INSTRUCTION_AND",
+    "BASE_INSTRUCTION_FREE", "BASE_INSTRUCTION_ADD", "BASE_INSTRUCTION_OR",
+    "BASE_INSTRUCTION_POP", "BASE_INSTRUCTION_PUSH", "BASE_INSTRUCTION_NOOP",
+    "BASE_INSTRUCTIONS"
+]
 
 
 class BaseInstructionType(Enum):
     """Base Instruction Type Enum.
 
-    Values:
-      DEFINED: Instruction definition represents a defined instruction
-      UNDEFINED: Instruction definition does not represent a defined instruction
+    Values
+    ------
+        - DEFINED: Instruction definition represents a defined instruction
+        - UNDEFINED: Instruction definition does not represent a defined instruction
     """
+
     DEFINED = True
     UNDEFINED = False
 
@@ -19,12 +32,15 @@ class BaseInstructionType(Enum):
 class BaseInstructionDataType(Enum):
     """Base Instruction Data Type Enum.
 
-    Values:
-      IMMEDIATE: Data is used by instruction in an immediate way
-      INDIRECT: Data is used by instruction in an indirect way
-      DATA: Data is not used by instruction so other data can be stored
-      UNDEFINED: Data may or may not be used IE don't put data here
+    Values
+    ------
+        - IMMEDIATE: Data is used by instruction in an immediate way
+        - INDIRECT: Data is used by instruction in an indirect way
+        - DATA: Data is not used by instruction so other data can be stored
+        - UNDEFINED: Data may or may not be used IE don't put data here
+
     """
+
     IMMEDIATE = 1
     INDIRECT = 2
     DATA = 3
@@ -49,13 +65,13 @@ class BaseInstructionDefinition:
 class BaseInstructionInstance:
     """Base Instruction Instance.
 
-    Defines an instance of an instruction IE the definition of the instruction
-    and the data stored with that instruction.
+    Defines an instance of an instruction IE the definition of the instruction and the data
+    stored with that instruction.
     """
 
     def __init__(self,
                  inst_definition: BaseInstructionDefinition,
-                 data: int = None):
+                 data: Optional[int] = None):
         """Initialise the instruction."""
         data_defined = True
         if data is None:
@@ -82,7 +98,7 @@ class BaseInstructionInstance:
         return self.data_defined
 
     def set_data(self, data: int) -> None:
-        """Sets instruction data."""
+        """Set instruction data."""
         if data >= 2**12 or data < 0:
             raise ValueError("Data outside of valid range of 0 to 2**12-1")
         self.data = data
