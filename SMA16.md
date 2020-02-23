@@ -97,10 +97,11 @@ SMA16 has a 12-bit address space, with the first 16 addresses being special purp
 
 On startup the following registers will contain the following values:
 
-| Registers | Value   |
-| --------- | ------- |
-| `$PC`     | `0x000` |
-| `$SR`     | `0b00`  |
+| Registers     | Value                               |
+| ------------- | ----------------------------------- |
+| `$PC`         | `0x000`                             |
+| `$SR`         | `0b00`                              |
+| `$STACK_SIZE` | Size of stack, see [Stack](#stack). |
 
 All other registers may contain any value, though will usually contain `0x0000`.
 
