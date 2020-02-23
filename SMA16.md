@@ -129,8 +129,8 @@ All instructions, unless otherwise noted, increment the program counter by 1.
 | `0xA`  | `SFULL`    | Set `MEMORY[$IR.DATA]` to `$ACC`.                            |
 | `0xB`  | `ADD`      | Set `$ACC.DATA` to `$ACC.DATA` arithmetic add `$IR.DATA`, then set `$SR<Z>` to `0b1` if `$ACC.DATA` is now zero and `0b0` if it is not zero. |
 | `0xC`  | Reserved 2 | Undefined. Some implementations may cause a fault, in which case they must cause the CPU to store the `$PC` plus 1 in the `$INTERRUPT_RETURN` register, jump to `@FAULT_VECTOR`, and set the `$INTERRUPT_REASON` register to `0x0ffC`. |
-| `0xD`  | `POP`      | Pop an item off the `STACK` and set `$ACC` to the popped value. |
-| `0xE`  | `PUSH`     | Push the value of `$ACC` onto the `STACK`.                   |
+| `0xD`  | `POP`      | Pop an item off the `STACK` and set `$ACC` to the popped value. As spaces in the stack become empty they are filled with `0x000`, so if you have a stack of 16 and pop 17 items the 17th item will definitely be `0x0000`. |
+| `0xE`  | `PUSH`     | Push the value of `$ACC` onto the `STACK`. If more items than the max stack size are stored, items should be lost, so if you have a stack of 16 and push 17 items on to it, the first item pushed will be lost. |
 | `0xF`  | `NOOP`     | No operation.                                                |
 
 ### Unimplemented Instructions
