@@ -63,7 +63,7 @@ const char *options_string = "Options:\n"
 #define ASCII_OUT 0x00A
 #define SMALL_OUT 0x00B
 #define TERM_CONF 0x00C
-#define MEMORY_CONF 0x00D
+#define STACK_SIZE 0x00D
 
 #define RESET_VECTOR 0x000
 #define FAULT_VECTOR 0x001
@@ -253,6 +253,7 @@ int main(int argc, char *argv[])
 
     // CPU State
     uint16_t memory[4096] = {0};
+    memory[STACK_SIZE] = 0;
     bool halt = false;
     bool test = false;
     uint16_t accumulator = 0;
