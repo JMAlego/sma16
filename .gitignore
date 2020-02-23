@@ -105,3 +105,6 @@ ENV/
 *.bin
 *.hex
 *.txt
+*.s16
+*.a16
+sma16vm

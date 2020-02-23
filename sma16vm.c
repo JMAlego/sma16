@@ -1,3 +1,6 @@
+/**
+ * Simple SMA16 VM in C. 
+ */
 #include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
@@ -25,6 +28,26 @@
 #include <signal.h>
 #endif
 
+#ifdef MEMORY_FILE
+const char *usage_line = "Usage: sma16vm [options]";
+#else
+const char *usage_line = "Usage: sma16vm [options] input_memory_file";
+#endif
+
+const char *version_string = "sma16 v0.1";
+
+const char *options_string = "Options:\n"
+                             "  --version\tDisplay version.\n"
+                             "  --help\tDisplay this message.\n"
+#ifdef ENABLE_DEBUG
+                             "  --debug\tDisplay debug information.\n"
+#endif
+#ifdef ENABLE_TIMING
+                             "  --time\tDisplay timing information\n"
+#endif
+                             "\n"
+                             "Short forms can also be used as per usual.";
+
 // Workaround for missing defines
 #define CLOCK_PROCESS_CPUTIME_ID 2
 #define SIGINT 2
@@ -50,11 +73,11 @@
 
 enum InterruptReason
 {
-    IR_UNKNOWN = 0x000,
-    IR_UNSUPPORTED = 0xfff,
+    IR_UNKNOWN = 0x0000,
+    IR_UNSUPPORTED = 0x0ff0,
 };
 
-#define 0x009 INTER_RETURN
+#define INTER_RETURN 0x009
 
 #define MEM(A, I, D) \
     {                \
@@ -204,7 +227,9 @@ void handle_sigint(int sig)
 }
 #endif
 
-#include "test.s16"
+#ifdef MEMORY_FILE
+#include "memory_file.s16"
+#endif
 
 int main(int argc, char *argv[])
 {
@@ -220,6 +245,11 @@ int main(int argc, char *argv[])
 #ifdef ENABLE_TIMING
     bool timed = false;
 #endif
+#ifndef MEMORY_FILE
+    int input_file_index = 0;
+#endif
+    bool help = false;
+    bool version = false;
 
     // CPU State
     uint16_t memory[4096] = {0};
@@ -234,20 +264,45 @@ int main(int argc, char *argv[])
     struct timespec end;
 #endif
 
-#if defined(ENABLE_DEBUG) || defined(ENABLE_TIMING)
     for (int arg = 0; arg < argc; arg++)
     {
+        if (argv[arg][0] == '-')
+        {
+            if (strncmp(argv[arg], "-h", 3) == 0 || strncmp(argv[arg], "--help", 7) == 0)
+                help = true;
+            else if (strncmp(argv[arg], "-v", 3) == 0 || strncmp(argv[arg], "--version", 10) == 0)
+                version = true;
 #ifdef ENABLE_DEBUG
-        if (strncmp(argv[arg], "-d", 3) == 0 || strncmp(argv[arg], "--debug", 8) == 0)
-            debug = true;
+            else if (strncmp(argv[arg], "-d", 3) == 0 || strncmp(argv[arg], "--debug", 8) == 0)
+                debug = true;
 #endif
 #ifdef ENABLE_TIMING
-        if (strncmp(argv[arg], "-t", 3) == 0 || strncmp(argv[arg], "--timed", 8) == 0)
-            timed = true;
+            else if (strncmp(argv[arg], "-t", 3) == 0 || strncmp(argv[arg], "--timed", 8) == 0)
+                timed = true;
+#endif
+        }
+#ifndef MEMORY_FILE
+        else if (arg != 0)
+        {
+            input_file_index = arg;
+        }
 #endif
     }
-#endif
 
+    if (version)
+    {
+        puts(version_string);
+        return 0;
+    }
+
+    if (help)
+    {
+        puts(usage_line);
+        puts(options_string);
+        return 0;
+    }
+
+#ifdef MEMORY_FILE
     /* Load program */
     uint16_t last_address = 0;
     for (uint16_t index = 0; index < (sizeof(PROGRAM) / sizeof(__prog_elem)); index++)
@@ -261,6 +316,41 @@ int main(int argc, char *argv[])
         memory[address] = PROGRAM[index].data;
         last_address = address;
     }
+#else
+    if (input_file_index == 0)
+    {
+        fputs("No input file.", stderr);
+        return 1;
+    }
+    else
+    {
+        FILE *input_file = fopen(argv[input_file_index], "r");
+
+        if (NULL == input_file)
+        {
+            fputs("Could not open file.", stderr);
+            return 2;
+        }
+
+        const size_t read_bytes = fread((uint8_t *)memory, 1, 8192, input_file);
+
+        if (read_bytes % 2 != 0)
+        {
+            fputs("Warning, uneven number of bytes read from memory image.", stderr);
+        }
+
+        for (size_t word_index = 0; word_index < read_bytes / 2; word_index++)
+        {
+            memory[word_index] = ((memory[word_index] & 0xff) << 8) | ((memory[word_index] >> 8) & 0xff);
+        }
+
+        if (0 != fclose(input_file))
+        {
+            fputs("Failed to close file.", stderr);
+            return 3;
+        }
+    }
+#endif
 
     for (;;)
     {
@@ -416,14 +506,14 @@ int main(int argc, char *argv[])
             {
                 memory[INTER_RETURN] = program_counter + 1;
                 program_counter = FAULT_VECTOR;
-                memory[INTER_REASON] = IR_UNSUPPORTED;
+                memory[INTER_REASON] = IR_UNSUPPORTED + POP;
             }
             break;
             case PUSH:
             {
                 memory[INTER_RETURN] = program_counter + 1;
                 program_counter = FAULT_VECTOR;
-                memory[INTER_REASON] = IR_UNSUPPORTED;
+                memory[INTER_REASON] = IR_UNSUPPORTED + PUSH;
             }
             break;
             case NOOP:

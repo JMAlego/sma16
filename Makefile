@@ -12,8 +12,18 @@ ifdef DISABLE_SIGINT
 MACRO_DEFINES += -D DISABLE_SIGINT
 endif
 
-sma16vm: program.s16 sma16vm.c
+ifdef MEMORY_FILE
+MACRO_DEFINES += -D MEMORY_FILE=$(MEMORY_FILE)
+endif
+
+sma16vm: sma16vm.c $(MEMORY_FILE)
+ifdef MEMORY_FILE
+	cp $(MEMORY_FILE) memory_file.s16
+endif
 	gcc -Wall -pedantic sma16vm.c -o sma16vm $(MACRO_DEFINES)
+ifdef MEMORY_FILE
+	rm memory_file.s16
+endif
 
 .PHONY: asm clean build
 
@@ -22,8 +32,4 @@ asm: sma16vm.a
 build: sma16vm
 
 clean:
-	rm -f sma16vm.a
 	rm -f sma16vm
-
-sma16vm.a: program.s16 sma16vm.c
-	gcc -S -fverbose-asm -Wall -pedantic sma16vm.c -o sma16vm.a $(MACRO_DEFINES)
