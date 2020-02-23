@@ -89,6 +89,10 @@ If the stack is not-implemented, then using `POP` or `PUSH` will cause a fault a
 
 The `$STACK_SIZE` register is set to the maximum stack depth available on startup. If no stack is available it will be set to `0x0000`. If a software implementation exists, it should set `$STACK_SIZE`   to the software implementation's maximum depth, after startup.
 
+## Memory
+
+SMA16 has a 12-bit address space, with the first 16 addresses being special purpose. All other memory locations are generic memory, though implementations may map them to other functions as needed.
+
 ## Initial Conditions
 
 On startup the following registers will contain the following values:
