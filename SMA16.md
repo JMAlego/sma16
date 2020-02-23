@@ -58,7 +58,7 @@ The SMA16 aims to be widely minimal, while it is not truly minimal (a minimal ma
 | Name                      | Shorthand           | Address | Width  | Description                                                  |
 | ------------------------- | ------------------- | ------- | ------ | ------------------------------------------------------------ |
 | Interrupt Reason Register | `$INTERRUPT_REASON` | `0x008` | 16-bit | The interrupt reason register contains the reason for the last interrupt. |
-| Interrupt Return Register | `$INTERRUPT_RETURN` | `0x009` | 12-bit | The interrupt return register stores the program counter at the point the last interrupt occurred. |
+| Interrupt Return Register | `$INTERRUPT_RETURN` | `0x009` | 12-bit | The interrupt return register stores the program counter at the point the last interrupt occurred plus one. |
 | Stack Size Register       | `$STACK_SIZE`       | `0x00D` | 16-bit | The stack size register is set to the hardware stack size on startup. This register can be overwritten after startup, typically by a software stack replacement to indicate its maximum size. Stack sizes of greater than `0xffff` are technically possible, therefore `0xffff` represents equal to or greater than `0xffff` stack size. |
 | Reserved                  |                     | `0x00E` |        |                                                              |
 | Reserved                  |                     | `0x00F` |        |                                                              |
