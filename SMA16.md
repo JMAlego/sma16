@@ -79,7 +79,7 @@ The SMA16 aims to be widely minimal, while it is not truly minimal (a minimal ma
 | ------------------------------- | ------------------ | ------- | ------ | ------------------------------------------------------------ |
 | Terminal Configuration Register | `$TERMINAL_CONFIG` | `0x00C` | 16-bit | The terminal configuration register stores the configuration for the on-board serial output. |
 | Console Output, ASCII           | `@ASCII_OUT`       | `0x00A` | 8-bit  | This memory address will output the ASCII character written to it to the system's primary console output (if any). **NB**: NULL *is* sent. |
-| Console Output, SMALL           | `@SMALL_OUT`       | `0x00B` | 12-bit | This memory address will output the SMALL (for SMALL encoding see [Appendix A](#appendix--a--small-encoding)) character written to it to the system's primary console output (if any). **NB**: NULL is *not* sent, characters which are NULL are omitted. |
+| Console Output, SMALL           | `@SMALL_OUT`       | `0x00B` | 12-bit | This memory address will output the SMALL (for SMALL encoding see [Appendix A](#appendix-a---small-encoding)) character written to it to the system's primary console output (if any). **NB**: NULL is *not* sent, characters which are NULL are omitted. |
 
 ## Stack
 
