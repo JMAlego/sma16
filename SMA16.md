@@ -127,7 +127,7 @@ All instructions, unless otherwise noted, increment the program counter by 1.
 | `0x8`  | `XOR`      | Set `$ACC.DATA` to `$ACC.DATA` bit-wise exclusive-or with `$IR.DATA`. |
 | `0x9`  | `AND`      | Set `$ACC.DATA` to `$ACC.DATA` bit-wise and with `$IR.DATA`. |
 | `0xA`  | `SFULL`    | Set `MEMORY[$IR.DATA]` to `$ACC`.                            |
-| `0xB`  | `ADD`      | Set `$ACC` to `$ACC` arithmetic add `$IR.DATA`, then set `$SR<Z>` to `0b1` if `$ACC.DATA` is now zero and `0b0` if it is not zero. |
+| `0xB`  | `ADD`      | Set `$ACC.DATA` to `$ACC.DATA` arithmetic add `$IR.DATA`, then set `$SR<Z>` to `0b1` if `$ACC.DATA` is now zero and `0b0` if it is not zero. |
 | `0xC`  | Reserved 2 | Undefined. Some implementations may cause a fault, in which case they must cause the CPU to store the `$PC` plus 1 in the `$INTERRUPT_RETURN` register, jump to `@FAULT_VECTOR`, and set the `$INTERRUPT_REASON` register to `0x0ffC`. |
 | `0xD`  | `POP`      | Pop an item off the `STACK` and set `$ACC` to the popped value. |
 | `0xE`  | `PUSH`     | Push the value of `$ACC` onto the `STACK`.                   |
