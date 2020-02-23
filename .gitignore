@@ -98,4 +98,10 @@ ENV/
 # mypy
 .mypy_cache/
 
+# VS Code
 .vscode/
+
+# Ignore outputs
+*.bin
+*.hex
+*.txt
