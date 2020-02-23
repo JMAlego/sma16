@@ -113,7 +113,7 @@ All instructions, unless otherwise noted, increment the program counter by 1.
 | Opcode | Name       | Description                                                  |
 | ------ | ---------- | ------------------------------------------------------------ |
 | `0x0`  | `HALT`     | Halts the CPU by setting `$SR<H>` to `0b1`.                  |
-| `0x1`  | Reserved 1 | Undefined. Some implementations may cause a fault, in which case they must cause the CPU to store the `$PC` in the `$INTERRUPT_RETURN` register, jump to `@FAULT_VECTOR`, and set the `$INTERRUPT_REASON` register to `0x0ff1`. |
+| `0x1`  | Reserved 1 | Undefined. Some implementations may cause a fault, in which case they must cause the CPU to store the `$PC` plus 1 in the `$INTERRUPT_RETURN` register, jump to `@FAULT_VECTOR`, and set the `$INTERRUPT_REASON` register to `0x0ff1`. |
 | `0x2`  | `JUMP`     | Set `$PC` to `$IR.DATA`. Does *not* increment program counter post instruction. |
 | `0x3`  | `JUMPZ`    | Set `$PC` to `$IR.DATA` if `$SR<Z>` is `0b1`, else increment `$PC` as normal. Does *not* increment program counter post instruction. |
 | `0x4`  | `LOAD`     | Set `$ACC` to `MEMORY[$IR.DATA]`.                            |
@@ -124,7 +124,7 @@ All instructions, unless otherwise noted, increment the program counter by 1.
 | `0x9`  | `AND`      | Set `$ACC.DATA` to `$ACC.DATA` bit-wise and with `$IR.DATA`. |
 | `0xA`  | `SFULL`    | Set `MEMORY[$IR.DATA]` to `$ACC`.                            |
 | `0xB`  | `ADD`      | Set `$ACC` to `$ACC` arithmetic add `$IR.DATA`, then set `$SR<Z>` to `0b1` if `$ACC.DATA` is now zero and `0b0` if it is not zero. |
-| `0xC`  | Reserved 2 | Undefined. Some implementations may cause a fault, in which case they must cause the CPU to store the `$PC` in the `$INTERRUPT_RETURN` register, jump to `@FAULT_VECTOR`, and set the `$INTERRUPT_REASON` register to `0x0ffC`. |
+| `0xC`  | Reserved 2 | Undefined. Some implementations may cause a fault, in which case they must cause the CPU to store the `$PC` plus 1 in the `$INTERRUPT_RETURN` register, jump to `@FAULT_VECTOR`, and set the `$INTERRUPT_REASON` register to `0x0ffC`. |
 | `0xD`  | `POP`      | Pop an item off the `STACK` and set `$ACC` to the popped value. |
 | `0xE`  | `PUSH`     | Push the value of `$ACC` onto the `STACK`.                   |
 | `0xF`  | `NOOP`     | No operation.                                                |
