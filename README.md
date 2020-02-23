@@ -49,3 +49,8 @@ main:
 
 hi: .const s"hi"
 ```
+
+#### TODO
+
+- [ ] Add support for `.var` directive to specify variable in addition to `.const`.
+- [ ] Add support for `%X` to propagate constants and not their addresses.
