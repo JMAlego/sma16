@@ -108,3 +108,5 @@ ENV/
 *.s16
 *.a16
 sma16vm
+
+!example/*.a16

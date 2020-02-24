@@ -1,0 +1,44 @@
+# Example of emulating a stack when there is no hardware stack available.
+# This still needs some work as it only emulates pushing.
+
+.vec.reset @main 
+.vec.fault @stack_sim
+
+.sec program
+
+main:
+    and 0x000
+    add 0x042
+    push
+    add 0x002
+    push
+    load 0xfe0
+    load 0xfe1
+    halt
+
+.sec stack_sim
+
+stack_sim:
+    store @ss_acc_value
+    load @INTERRUPT_REASON
+    add 0x002
+    jumpz @ss_push_impl
+    jump @ss_return
+    ss_push_impl:
+        load @sp
+        store @ss_to_stack
+        and 0x000
+        ss_acc_value: add ?
+        ss_to_stack: store ?
+        load @sp
+        add 0x001
+        store @sp
+    ss_return:
+        load @INTERRUPT_RETURN
+        store @ss_return_jump
+        load @ss_acc_value
+        ss_return_jump: jump ?
+
+stack_start: .const 0xfe0
+sp: .const 0xfe0
+stack_end: .const 0xff0

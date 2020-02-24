@@ -171,19 +171,19 @@ VECTORS = {
 }
 
 REGISTERS = {
-    "INTER_REASON": Register(address=0x009),
+    "INTERRUPT_REASON": Register(address=0x008),
+    "INTERRUPT_RETURN": Register(address=0x009),
     "ASCII_OUT": Register(address=0x00A),
     "SMALL_OUT": Register(address=0x00B),
     "TERM_CONF": Register(address=0x00C),
-    "MEMORY_CONF": Register(address=0x00D),
+    "STACK_SIZE": Register(address=0x00D),
     "RESERVED1": Register(address=0x00E),
     "RESERVED2": Register(address=0x00F)
 }
 
 REGIONS = {
-    "configuration": Region(type="reserved", start=0x009, end=0x00f, count=7),
-    "vectors": Region(type="reserved", start=0x000, end=0x008, count=9),
-    "pseudo_instruction_scratch": Region(type="reserved", start=0xff0, end=0xfff, count=16),
+    "configuration": Region(type="reserved", start=0x008, end=0x00f, count=8),
+    "vectors": Region(type="reserved", start=0x000, end=0x007, count=8),
 }
 
 CONSTANTS = {
@@ -440,7 +440,7 @@ def serialise_value(value: Optional[ParsedValue]) -> Union[int, str]:
     if value.type == "short_string":
         if not isinstance(value.value, str):
             raise AssemblyError("value of short string was not a string, this is a bug")
-        return (transform_character(value.value[1]) << 6) | transform_character(value.value[0])
+        return (transform_character(value.value[0]) << 6) | transform_character(value.value[1])
 
     # ASCII strings are packed
     if value.type == "ascii_string":

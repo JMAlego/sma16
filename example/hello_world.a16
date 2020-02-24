@@ -1,0 +1,35 @@
+# Example of printing "Hello World\n" with a loop.
+# The loop here could be optimised to use less instructions.
+
+.vec.reset @main 
+.vec.fault @RESET_VECTOR
+
+.sec program
+
+main:
+    and 0x000
+    start_loop:
+        add 0xffa
+        jumpz @end_loop
+        add 0x006
+        store @restore
+        add @s1
+        store @char_load
+        char_load: load ?
+        store @SMALL_OUT
+        and 0x000
+        restore: add ?
+        add 0x001
+        jump @start_loop
+    end_loop:
+    load @a1
+    store @ASCII_OUT
+    halt
+
+s1: .const s"He"
+.const s"ll"
+.const s"o "
+.const s"Wo"
+.const s"rl"
+.const s"d_"
+a1: .const a'\n'
