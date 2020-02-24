@@ -109,4 +109,5 @@ ENV/
 *.a16
 sma16vm
 
-!example/*.a16
+!example/**/*.a16
+!example/**/*.hex
