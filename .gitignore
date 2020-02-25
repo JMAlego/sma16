@@ -107,6 +107,7 @@ ENV/
 *.txt
 *.s16
 *.a16
+*.dbg
 sma16vm
 
 !example/**/*.a16

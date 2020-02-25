@@ -18,7 +18,7 @@ class Instruction(IntEnum):
     """Machine instructions."""
 
     HALT = 0x0
-    # 0x1
+    RESERVED1 = 0x1
     JUMP = 0x2
     JUMPZ = 0x3
     LOAD = 0x4
@@ -29,7 +29,7 @@ class Instruction(IntEnum):
     AND = 0x9
     SFULL = 0xA
     ADD = 0xB
-    # 0xC
+    RESERVED2 = 0xC
     POP = 0xD
     PUSH = 0xE
     NOOP = 0xF
@@ -157,6 +157,7 @@ class UnresolvedAddressConstant:
 
 def force_resolved(generator_function):
     """Turn a generator function into a normal function returning a list."""
+    _ = None  # This line makes linters happy
 
     def resolver_function(*args, **kwargs):
         return list(generator_function(*args, **kwargs))
@@ -350,7 +351,7 @@ def get_section_sizes(items: Iterable[Union[GluedItem, UnresolvedAddressValue]])
 
 def assign_sections(region_table: RegionTable, sections: Dict[str, int]):
     """Assign memory sections.
-    
+
     This is a packing problem and therefore reasonably complex.
     A simplistic algorithm is used here which may not always be optimal if user
     assigned addresses are used for some sections.
@@ -562,6 +563,39 @@ def resolve_references(
         yield item.resolve(reference_table)
 
 
+def serialise_to_c_file(reference_table: ReferenceTable, region_table: RegionTable,
+                        resolved_items: Iterable[AddressValue]) -> bytes:
+    """Serialise to a C source file."""
+    lines = []
+
+    lines.append("/* GENERATED from sma16asm.py")
+    lines.append(" *")
+    lines.append(" * Regions:")
+    for region_name, region_properties in sorted(region_table.items(), key=lambda x: x[1].start):
+        lines.append(" *   - {} from 0x{:03x} to 0x{:03x}".format(region_name, region_properties.start,
+                                                                  region_properties.end))
+    lines.append(" */")
+
+    lines.append("")
+    lines.append("#include <stdint.h>")
+    lines.append("")
+
+    lines.append("typedef struct")
+    lines.append("{")
+    lines.append("    uint16_t address;")
+    lines.append("    uint16_t data;")
+    lines.append("} __prog_elem;")
+
+    lines.append("")
+
+    lines.append("const __prog_elem PROGRAM[] = {")
+    for item in resolved_items:
+        lines.append("  {{0x{:03x}, 0x{:04x}}},".format(item.address, item.value))
+    lines.append("};")
+
+    return "\n".join(lines).encode("ascii")
+
+
 def serialise_to_text_file(reference_table: ReferenceTable, region_table: RegionTable,
                            resolved_items: Iterable[AddressValue]) -> bytes:
     """Serialise to a memory file."""
@@ -580,6 +614,57 @@ def serialise_to_text_file(reference_table: ReferenceTable, region_table: Region
         lines.append("MEM(0x{:03x}, 0x{:x}, 0x{:03x})".format(item.address, (item.value >> 12) & 0xf,
                                                               item.value & 0xfff))
     lines.append("END_PROGRAM")
+
+    return "\n".join(lines).encode("ascii")
+
+
+def serialise_to_debug_file(reference_table: ReferenceTable, region_table: RegionTable,
+                            resolved_items: Iterable[AddressValue]) -> bytes:
+    """Serialise to a debug file."""
+    lines = []
+
+    def _get_region_name(address):
+        for region_name, region_properties in region_table.items():
+            if region_properties.start <= address <= region_properties.end:
+                return region_name
+        return "any"
+
+    lines.append("/* GENERATED from sma16asm.py")
+    lines.append(" *")
+    lines.append(" * Regions:")
+    for region_name, region_properties in sorted(region_table.items(), key=lambda x: x[1].start):
+        lines.append(" *   - {} from 0x{:03x} to 0x{:03x}".format(region_name, region_properties.start,
+                                                                  region_properties.end))
+    lines.append(" *")
+    lines.append(" * References:")
+    for reference_name, reference_address in sorted(reference_table.items(), key=lambda x: x[1]):
+        lines.append(" *   - 0x{:03x} -> {} ".format(reference_address, reference_name))
+    lines.append(" */")
+
+    reverse_reference_table = dict((v, k) for k, v in reference_table.items())
+
+    lines.append("=== START MEMORY ===")
+    current_section = ""
+    max_reference_name_length = max(map(len, reference_table.keys()))
+    debug_format = "0x{{:03x}} ({{:{}s}}) -> 0x{{:x}} ({{:5s}}), 0x{{:03x}} ({{:{}s}})".format(
+        max_reference_name_length, max_reference_name_length)
+    for item in resolved_items:
+        section = _get_region_name(item.address)
+        if section != current_section:
+            current_section = section
+            lines.append("--- {} ---".format(current_section))
+        instruction_code = (item.value >> 12) & 0xf
+        data_value = item.value & 0xfff
+        lines.append(
+            debug_format.format(
+                item.address,
+                reverse_reference_table[item.address] if item.address in reverse_reference_table else "",
+                instruction_code,
+                Instruction(instruction_code).name,
+                data_value,
+                reverse_reference_table[data_value] if data_value in reverse_reference_table else "",
+            ))
+    lines.append("===  END MEMORY  ===")
 
     return "\n".join(lines).encode("ascii")
 
@@ -646,6 +731,10 @@ def assemble_file(file_path: str, output_file: str, output_format: str = "text")
         output_bytes = serialise_to_bin_file(resolved_items)
     elif output_format == "hex":
         output_bytes = serialise_to_hex_file(resolved_items)
+    elif output_format == "c":
+        output_bytes = serialise_to_c_file(reference_table, region_table, resolved_items)
+    elif output_format == "debug":
+        output_bytes = serialise_to_debug_file(reference_table, region_table, resolved_items)
     else:
         output_bytes = serialise_to_text_file(reference_table, region_table, resolved_items)
 
@@ -658,11 +747,8 @@ def main() -> int:
     argument_parser = ArgumentParser(formatter_class=ArgumentDefaultsHelpFormatter)
 
     argument_parser.add_argument("INPUT")
-    argument_parser.add_argument("-o", "--output", default="a.txt")
-    argument_parser.add_argument("-f",
-                                 "--format",
-                                 default="auto",
-                                 choices=("auto", "text", "t", "bin", "b", "hex", "h", "x"))
+    argument_parser.add_argument("-o", "--output", default="a.dbg")
+    argument_parser.add_argument("-f", "--format", default="auto", choices=("auto", "bin", "c", "debug", "hex", "text"))
 
     parsed_arguments = argument_parser.parse_args()
 
@@ -675,14 +761,12 @@ def main() -> int:
             output_format = "bin"
         elif ext == ".hex":
             output_format = "hex"
+        elif ext == ".c":
+            output_format = "c"
+        elif ext == ".dbg":
+            output_format = "debug"
         else:
             output_format = "text"
-    elif output_format == "b":
-        output_format = "bin"
-    elif output_format == "h" or output_format == "x":
-        output_format = "hex"
-    elif output_format == "t":
-        output_format = "text"
 
     if not path.isdir(path.dirname(output_path)):
         print("Output directory does not exist.")
